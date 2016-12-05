@@ -1,0 +1,86 @@
+
+#toggleLogin {
+    
+    padding-right: 15px;
+    
+}
+
+#loginAlert {
+  display: block;
+}
+
+#tweetSuccess {
+    
+    display:none;
+    
+}
+
+#tweetFail {
+    
+    display:none;
+    
+}
+
+.from {
+  font-size: 30px;
+  font-weight: bold;
+  font-family: "Times New Romance", Times, serif;
+}
+
+.subject {
+  font-size: 20px;
+  font-weight: normal;
+  font-family: "Times New Romance", Times, serif;
+}
+
+.body {
+  font-size: 15px;
+  font-weight: normal;
+  font-family: "Times New Romance", Times, serif;
+}
+
+.mainContainer {
+    
+    padding: 20px;
+    
+}
+
+.time {
+    
+    color: lightgrey;
+    
+}
+
+.tweet {
+    
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    
+}
+
+
+
+
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+} 
+
