@@ -138,9 +138,9 @@
 <div class="container mainContainer">
 
     <div class="row">
-  		<div class="col-md-8">
+  		<div class="col-md-10">
         
-        	<h1><b>Your tweets</b></h1>
+        	<h1><b>Your Konects</b></h1>
         	<hr>
         	<br>
 				<!-- <ul class="tab" id="tabs">
@@ -148,8 +148,9 @@
   					<li><a href data-target="#sent"  class="tablinks">Sent</a></li>
   					<li><a href data-target="#unread"  class="tablinks">Unread</a></li>
 				</ul> -->
-				<div id="received">
-				    <h2>Received Messages</h2>
+        <div style="width: 40%; float:left; border: 1">
+        <h3>Received Konects</h3>
+				<div id="messages">
   					{% if result['received']|length > 0 %}
         			{% for message in result['received'] %}
         		    	<a class="message" href={{ message['url'] }}>
@@ -166,8 +167,8 @@
         			{% endif %}
 				</div>
 
-				<div id="sent">
-					<h2>Sent Messages</h2>
+        <h3>Sent Konects</h3>
+				<div id="messages">
 	  				{% if result['sent']|length > 0 %}
 	        		{% for message in result['sent'] %}
 	        		    <a class="message" href={{ message['url'] }}>
@@ -184,8 +185,8 @@
 	        		{% endif %}
 				</div>
 
-				<div id="unread">
-					<h2>Unread Messages</h2>
+				<h3>Unread Konect</h3>
+        <div id="messages">
 		  			{% if result['unread']|length > 0 %}
 	        		{% for message in result['sent'] %}
 	        		    <a class="message" href={{ message['url'] }}>
@@ -201,6 +202,10 @@
 	        		<p>You have no message(s)</p>
 	        		{% endif %}
 				</div>
+        </div>
+        <div style="width: 55%; float:right">
+            A newspaper is a serial publication[1][2][3] containing news, other informative articles (listed below), and advertising. A newspaper is usually but not exclusively printed on relatively inexpensive, low-grade paper such as newsprint. The news organizations that publish newspapers are themselves often metonymically called newspapers. Most newspapers are now published online as well as in print. The online versions are called online newspapers or news sites.
+        </div>
 			</div>
 		</div>
 </div>

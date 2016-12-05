@@ -9,6 +9,11 @@
   display: block;
 }
 
+#messages {
+  overflow-y: scroll;
+  height: 150px;
+}
+
 #tweetSuccess {
     
     display:none;
@@ -22,7 +27,7 @@
 }
 
 .from {
-  font-size: 30px;
+  font-size: 20px;
   font-weight: bold;
   font-family: "Times New Romance", Times, serif;
 }

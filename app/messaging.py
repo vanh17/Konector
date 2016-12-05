@@ -167,7 +167,6 @@ def user_messages(username):
          if m['read']
       ]
    }
-   print(results['received'][0]['from'])
    return flask.render_template("index.html", has_result=True, result=results)
 
 ## Used to post a new message. Body contains information about recipient
