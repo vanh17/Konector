@@ -5,9 +5,11 @@
 from sqlalchemy import Table, Column, Integer, String
 from flask import Flask, make_response, json, url_for, request, redirect
 import flask
+import re
 from db import Db   # See db.py
 # import user # See user.py
 import message # See message.py
+import tweets
 
 app = Flask(__name__)
 # The keys.json file should contain the 4 properties:
@@ -174,7 +176,12 @@ def user_messages(username):
 ## - Add to database
 @app.route('/users/<username>/messages', methods = ['POST'])
 def user_new_message(username):
-   contents = request.get_json()
+   body = request.form['body']
+   contents['reply_to'] = request.form['reply_to']
+   #extract the recipents
+   to = re.findall('(?<=@)[a-zA-Z]+\w+', body)
+   contents['to'] = username if len(to) == 0 else to[0]
+   contents['body'] = body
    contents['from'] = username
    error = message.validate_new_message(contents)
    if error is not None:
@@ -186,6 +193,8 @@ def user_new_message(username):
       'Location': url_for('message_get', id=record_id)
    })
 
+
+
 ## Get a particular message
 @app.route('/messages/<id>', methods = ['GET'])
 def message_get(id):
@@ -195,26 +204,28 @@ def message_get(id):
       return make_json_response({ 'error': 'Cannot find specified id' }, 404)
    if (results is False) or (tags is None):
       return make_json_response({ 'error': 'Internal Server Error' }, 500)   
-   return make_json_response({
-    "id": id,
-    "from": results["from"],
-    "to": results["to"],
-    "subject": results["subject"],
-    "reply_to": results["reply_to"],
-    "body": results["body"],
-    "read": results["read"],
-    "tags": [
-         { 'url': url_for('tag_check', id=id, tag=t) }
-         for t in tags
+   j_results = {
+      "id": id,
+      "from": results["from"],
+      "to": results["to"],
+      "subject": results["subject"],
+      "reply_to": results["reply_to"],
+      "body": results["body"],
+      "read": results["read"],
+      "tags": [
+           { 'url': url_for('tag_check', id=id, tag=t) }
+           for t in tags
       ],
-    "add_tag": {
-        "url": url_for('tag_add', id=id, tag='<tag>')
-    },
-    "reply": {
-        'url': url_for('user_new_message', username=results["to"]),
-        'content': { 'reply_to' : id,'to': results["from"], 'subject': ('Re:' if results["subject"][:3] != 'Re:' else '') + results["subject"], 'body': '' }
-    }
-}, 200)
+      "add_tag": {
+          "url": url_for('tag_add', id=id, tag='<tag>')
+      },
+      "reply": {
+          'url': url_for('user_new_message', username=results["to"]),
+          'content': { 'reply_to' : id,'to': results["from"], 'subject': ('Re:' if results["subject"][:3] != 'Re:' else '') + results["subject"], 'body': '' }
+      }
+   }
+   json_response = make_json_response(j_results, 200)
+   return flask.render_template('message.html', has_result=True, result={'route': 'message_get', 'message': j_results})
 
 ## Change a read status of a message
 @app.route('/messages/<id>', methods = ['POST'])

@@ -204,7 +204,10 @@
 				</div>
         </div>
         <div style="width: 55%; float:right">
-            A newspaper is a serial publication[1][2][3] containing news, other informative articles (listed below), and advertising. A newspaper is usually but not exclusively printed on relatively inexpensive, low-grade paper such as newsprint. The news organizations that publish newspapers are themselves often metonymically called newspapers. Most newspapers are now published online as well as in print. The online versions are called online newspapers or news sites.
+            <div id="message_detail">
+            </div>
+            <button id="konectply" class="btn btn-success">Konectply</button>
+            <div id="konectply_form" >sdljsdklgdsjgkdslgjskdgld</div>
         </div>
 			</div>
 		</div>
@@ -265,6 +268,8 @@
   </div>
 </div>
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
 <script>
     $("#toggleLogin").click(function() {
         
@@ -289,9 +294,17 @@
         
         
     })
-
+    //this is the code to load the info from other html
     $(function() {
-    	$('#tabs').tabs();
+      $("#messages > a").click(function(e) {
+          e.preventDefault(); //so the browser doesn't follow the link
+
+          $("#message_detail").load(this.href, function() {
+            //execute here after load completed
+            $("#konectply").show();
+            $("#konectply_form").show();
+          });
+      });
     })
     
     

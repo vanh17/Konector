@@ -1,0 +1,12 @@
+{
+   "twitter": {
+      "key": "TSnhEVxNPeUUVpA5WhxTLpjXb",
+      "secret": "0VWcIxSC5czzzCgO40oKkhTqUCtZj18owFKE6W9eXbo9qq9CGK"
+   },
+   "vault": {
+      "username": "vanh17",
+      "password": "HC_367088",
+      "server": "vault.hanover.edu",
+      "schema": "vanh17"
+   }
+}

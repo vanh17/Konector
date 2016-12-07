@@ -26,6 +26,14 @@
     
 }
 
+#konectply {
+  display: none;
+}
+
+#konectply_form {
+  display: none;
+}
+
 .from {
   font-size: 20px;
   font-weight: bold;
