@@ -153,7 +153,7 @@
 				<div id="messages">
   					{% if result['received']|length > 0 %}
         			{% for message in result['received'] %}
-        		    	<a class="message" href={{ message['url'] }}>
+        		    	<a id="message_url" class="message" href={{ message['url'] }}>
         		    	<div class = "container">
         		    		<p class='from'>From: {{ message['from'] }}</p>  	
         			    	<p class='subject'>Subject: {{ message['subject'] }} &nbsp;&nbsp; {{ message['created'] }}</p>
@@ -171,7 +171,7 @@
 				<div id="messages">
 	  				{% if result['sent']|length > 0 %}
 	        		{% for message in result['sent'] %}
-	        		    <a class="message" href={{ message['url'] }}>
+	        		    <a id="message_url" class="message" href={{ message['url'] }}>
 	        		    <div class = "container">
 	        		    	<p class='from'>From: {{ message['from'] }}</p>  	
 	        			    <p class='subject'>Subject: {{ message['subject'] }} &nbsp;&nbsp; {{ message['created'] }}</p>
@@ -189,7 +189,7 @@
         <div id="messages">
 		  			{% if result['unread']|length > 0 %}
 	        		{% for message in result['sent'] %}
-	        		    <a class="message" href={{ message['url'] }}>
+	        		    <a id="message_url" class="message" href={{ message['url'] }}>
 	        		    <div class = "container">
 	        		    	<p class='from'>From: {{ message['from'] }}</p>  	
 	        			    <p class='subject'>Subject: {{ message['subject'] }} &nbsp;&nbsp; {{ message['created'] }}</p>
@@ -207,7 +207,13 @@
             <div id="message_detail">
             </div>
             <button id="konectply" class="btn btn-success">Konectply</button>
-            <div id="konectply_form" >sdljsdklgdsjgkdslgjskdgld</div>
+            <div id="konectply_div" >
+              <fieldset class="form-group" id="konectply_form">
+                  <label for="email">Konect</label>
+                  <input type="text" class="form-control" id="konectply_info" placeholder="Wanna Konect something...">
+              </fieldset>
+              <button type="button" id="konectplyButton" class="btn btn-primary">Konectply</button>
+            </div>
         </div>
 			</div>
 		</div>
@@ -268,7 +274,7 @@
   </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
 
 <script>
     $("#toggleLogin").click(function() {
@@ -302,10 +308,11 @@
           $("#message_detail").load(this.href, function() {
             //execute here after load completed
             $("#konectply").show();
-            $("#konectply_form").show();
           });
       });
     })
+
+    
     
     
     $("#loginSignupButton").click(function() {

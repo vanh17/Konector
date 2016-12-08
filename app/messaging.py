@@ -9,7 +9,6 @@ import re
 from db import Db   # See db.py
 # import user # See user.py
 import message # See message.py
-import tweets
 
 app = Flask(__name__)
 # The keys.json file should contain the 4 properties:
