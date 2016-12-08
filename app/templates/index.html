@@ -206,12 +206,15 @@
         <div style="width: 55%; float:right">
             <div id="message_detail">
             </div>
+            <div id="konectply_box">
             <button id="konectply" class="btn btn-success">Konectply</button>
+            </div>
             <div id="konectply_div" >
-              <fieldset class="form-group" id="konectply_form">
-                  <label for="email">Konect</label>
-                  <input type="text" class="form-control" id="konectply_info" placeholder="Wanna Konect something...">
+              <form action="" method="post">
+              <fieldset class="form-group">
+                  <input type="text" class="form-control" id="konectply_form" placeholder="Wanna Konect something...">
               </fieldset>
+              </form>
               <button type="button" id="konectplyButton" class="btn btn-primary">Konectply</button>
             </div>
         </div>
@@ -302,7 +305,7 @@
     })
     //this is the code to load the info from other html
     $(function() {
-      $("#messages > a").click(function(e) {
+      $("#message_url").click(function(e) {
           e.preventDefault(); //so the browser doesn't follow the link
 
           $("#message_detail").load(this.href, function() {
@@ -312,7 +315,25 @@
       });
     })
 
-    
+    $("#konectply").click(function() {
+      $('#konectply_div').show();
+      $('#konectply_box').hide();
+    })
+
+    $("#konectplyButton").click(function() {
+      $.ajax({
+        type: "POST",
+        url: "/users/skiadas/messages",
+        data: "body=" + $("#konectply_form").val() + "&reply_to=" + $("#m_id").val(),
+        success: function(result) {
+          alert("You have successfully konected");
+          window.location.href="/users/skiadas/messages";
+        },
+        error: function(result) {
+          console.log(result['responseJSON']['error'])
+        }
+      })
+    })    
     
     
     $("#loginSignupButton").click(function() {

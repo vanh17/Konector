@@ -30,6 +30,10 @@
   display: none;
 }
 
+#m_id {
+  display: none;
+}
+
 #konectply_div {
   display: none;
 }

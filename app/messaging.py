@@ -138,7 +138,8 @@ def user_messages(username):
            'subject': m['subject'],
            'body': m['body'],
            'created': m['created'].strftime('%d, %b %Y'),
-           'read': m['read']
+           'read': m['read'],
+           'id': m['id']
          } 
          for m in results
          if m['to'] == username
@@ -150,7 +151,8 @@ def user_messages(username):
            'subject': m['subject'],
            'body': m['body'],
            'created': m['created'].strftime('%d, %b %Y'),
-           'read': m['read']
+           'read': m['read'],
+           'id': m['id']
          } 
          for m in results
          if m['from'] == username
@@ -162,7 +164,8 @@ def user_messages(username):
            'subject': m['subject'],
            'body': m['body'],
            'created': m['created'].strftime('%d, %b %Y'),
-           'read': m['read']
+           'read': m['read'],
+           'id': m['id']
          } 
          for m in results
          if m['read']
@@ -176,12 +179,14 @@ def user_messages(username):
 @app.route('/users/<username>/messages', methods = ['POST'])
 def user_new_message(username):
    body = request.form['body']
+   contents = {}
    contents['reply_to'] = request.form['reply_to']
    #extract the recipents
    to = re.findall('(?<=@)[a-zA-Z]+\w+', body)
    contents['to'] = username if len(to) == 0 else to[0]
    contents['body'] = body
    contents['from'] = username
+   contents['subject'] = "This is the test"
    error = message.validate_new_message(contents)
    if error is not None:
       return make_json_response({ 'error': error }, 400)
