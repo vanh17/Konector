@@ -20,6 +20,14 @@
     
 }
 
+#create_konect {
+  display: none;
+}
+
+#create_form_div {
+  display: block;
+}
+
 #tweetFail {
     
     display:none;
@@ -44,10 +52,13 @@
   font-family: "Times New Romance", Times, serif;
 }
 
-.subject {
-  font-size: 20px;
-  font-weight: normal;
-  font-family: "Times New Romance", Times, serif;
+#message_detail {
+  overflow-y: scroll;
+  height: 300px
+}
+
+#search_box {
+  width: 350px;
 }
 
 .body {

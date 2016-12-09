@@ -41,6 +41,11 @@
       {% endif %}
   </div>
 </nav>
+<form action="" method="post" id="search_box">
+              <fieldset class="form-group">
+                  <input type="text" class="form-control" id="search_form" placeholder="Please type in the username or #hashTags...">
+              </fieldset>
+</form>
 {% if has_result %}
 <!-- Public profiles -->
 {% if result['route'] == 'user_page' %}
@@ -62,8 +67,15 @@
       
       		<?php } ?> -->
       		<h2> {{ result['user'] }} </h2>
-      		<li><a href="{{ result['create']['url'] }}">Creat Konect</a></li>
-      		<li><a href="{{ result['tweet'] }}">Your Konects</a></li>
+      		<a href="{{ result['tweet'] }}">Your Konects</a>
+        </div>        
+        <div id="create_form_div">
+          <form action="" method="post">
+              <fieldset class="form-group">
+                  <input type="text" class="form-control" id="create_form" placeholder="Wanna Konect something...">
+              </fieldset>
+          </form>
+          <button type="button" id="createButton" class="btn btn-primary">Konectply</button>
         </div>
         {% else %}
   		<div>
@@ -149,15 +161,18 @@
   					<li><a href data-target="#unread"  class="tablinks">Unread</a></li>
 				</ul> -->
         <div style="width: 40%; float:left; border: 1">
-        <h3>Received Konects</h3>
+        <h3>Mentioned Konects</h3>
 				<div id="messages">
-  					{% if result['received']|length > 0 %}
-        			{% for message in result['received'] %}
-        		    	<a id="message_url" class="message" href={{ message['url'] }}>
+  					{% if result['mentioned']|length > 0 %}
+        			{% for konect in result['mentioned'] %}
+        		    	<a id="message_url" class="message" href={{ konect['url'] }}>
         		    	<div class = "container">
-        		    		<p class='from'>From: {{ message['from'] }}</p>  	
-        			    	<p class='subject'>Subject: {{ message['subject'] }} &nbsp;&nbsp; {{ message['created'] }}</p>
-        					<p class='body'>{{ message['body'] }}</p>
+        		    		<p class='from'>From: {{ konect['from'] }} </p>
+                    {% if konect['read'] == 0 %}
+                    <p> Not Read </p>
+                    {% endif %}  	
+        			    	<p class='subject'>{{ konect['created'] }} </p>
+        					<p class='body'>{{ konect['body'] }}</p>
         				</div>
         				</a>
         				<br>
@@ -170,30 +185,11 @@
         <h3>Sent Konects</h3>
 				<div id="messages">
 	  				{% if result['sent']|length > 0 %}
-	        		{% for message in result['sent'] %}
-	        		    <a id="message_url" class="message" href={{ message['url'] }}>
-	        		    <div class = "container">
-	        		    	<p class='from'>From: {{ message['from'] }}</p>  	
-	        			    <p class='subject'>Subject: {{ message['subject'] }} &nbsp;&nbsp; {{ message['created'] }}</p>
-	        				<p class='body'>{{ message['body'] }}</p>
-	        			</div>
-	        			</a>
-	        			<br>
-	        		{% endfor %}
-	        		{% else %}
-	        		<p>You have no message(s)</p>
-	        		{% endif %}
-				</div>
-
-				<h3>Unread Konect</h3>
-        <div id="messages">
-		  			{% if result['unread']|length > 0 %}
-	        		{% for message in result['sent'] %}
-	        		    <a id="message_url" class="message" href={{ message['url'] }}>
-	        		    <div class = "container">
-	        		    	<p class='from'>From: {{ message['from'] }}</p>  	
-	        			    <p class='subject'>Subject: {{ message['subject'] }} &nbsp;&nbsp; {{ message['created'] }}</p>
-	        				<p class='body'>{{ message['body'] }}</p>
+	        		{% for konect in result['sent'] %}
+	        		    <a id="message_url" class="message" href={{ konect['url'] }}>
+	        		    <div class = "container">  	
+	        			    <p class='subject'>{{ konect['created'] }}</p>
+	        				<p class='body'>{{ konect['body'] }}</p>
 	        			</div>
 	        			</a>
 	        			<br>
@@ -280,6 +276,15 @@
 
 
 <script>
+    //Code for searching
+    $('#search_form').keypress(function(e) {
+        if (event.which == 13) {
+           event.preventDefault();
+           window.location.href="http://google.com"
+        }
+    })
+
+    //Changing login/signup function
     $("#toggleLogin").click(function() {
         
         if ($("#loginActive").val() == "1") {
@@ -305,7 +310,7 @@
     })
     //this is the code to load the info from other html
     $(function() {
-      $("#message_url").click(function(e) {
+      $("#messages > a").click(function(e) {
           e.preventDefault(); //so the browser doesn't follow the link
 
           $("#message_detail").load(this.href, function() {
@@ -323,17 +328,33 @@
     $("#konectplyButton").click(function() {
       $.ajax({
         type: "POST",
-        url: "/users/skiadas/messages",
-        data: "body=" + $("#konectply_form").val() + "&reply_to=" + $("#m_id").val(),
+        url: "/users/skiadas/konects",
+        data: "body=" + $("#konectply_form").val() + "&reply_to=" + $("#m_id").text(),
         success: function(result) {
           alert("You have successfully konected");
-          window.location.href="/users/skiadas/messages";
+          window.location.href="/users/skiadas/konects";
         },
         error: function(result) {
-          console.log(result['responseJSON']['error'])
+          console.log(result)
         }
       })
-    })    
+    })
+
+
+
+    $("#createButton").click(function() {
+      $.ajax({
+        type: "POST",
+        url: "/users/vanh17/konects",
+        data: "body=" + $("#create_form").val(),
+        success: function(result) {
+          alert('Successfully konect!');
+          window.location.href= "/users1/" + {{ result['user'] }} + "/google.com";
+        },
+      })
+    }) 
+
+
     
     
     $("#loginSignupButton").click(function() {

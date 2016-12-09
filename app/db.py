@@ -16,24 +16,26 @@ class Db:
 
       self.users = Table('users', self.metadata,
          Column('id', Integer, primary_key = True, autoincrement = True),
-         Column('email', String(40), ForeignKey('msg_messages.from'), nullable = False),
+         Column('email', String(40), ForeignKey('konects.sender'), nullable = False),
          Column('name', String(20), nullable = False),
          Column('password', String(20), nullable = False),
       )
-      self.messages = Table('msg_messages', self.metadata,
+      self.konects = Table('konects', self.metadata,
          Column('id', Integer, primary_key = True, autoincrement = True),
-         Column('from', String(20), nullable = False),
-         Column('to', String(20), nullable = False),
-         Column('subject', String(140), nullable = False),
+         Column('sender', String(20), nullable = False),
          Column('body', String(5000), nullable = False),
          Column('reply_to', Integer,
-            ForeignKey('msg_messages.id'), nullable = True),
-         Column('created', DateTime(timezone = True), nullable = False),
-         Column('read', Boolean, nullable = False, default = False),
-         Column('priority', String(1), nullable = False, default = 'M')
+            ForeignKey('konects.id'), nullable = True),
+         Column('created', DateTime(timezone = True), nullable = False)
       )
-      self.tags = Table('msg_tags', self.metadata,
-         Column('msg_id', Integer, ForeignKey('msg_messages.id'),
+      self.mentions = Table('kon_mentions', self.metadata,
+         Column('kon_id', BigInteger, ForeignKey('konects.id'),
+            primary_key = True),
+         Column('username', String(20), nullable = False, primary_key = True),
+         Column('read', Boolean, nullable = False, default = False),
+      )
+      self.tags = Table('kon_tags', self.metadata,
+         Column('kon_id', Integer, ForeignKey('konects.id'),
             primary_key = True),
          Column('tag', String(20), nullable = False, primary_key = True)
       )
@@ -52,57 +54,66 @@ class Db:
       except:
          return None
    ## Will create an insert query based on the dictionary m
-   def write_message(self, m):
+   def write_konect(self, m):
       try:
          conn = self.connect()
          m['created'] = datetime.today()
-         if 'read' not in m:
-            m['read'] = False
-         result = conn.execute(self.messages.insert(), m)
+         result = conn.execute(self.konects.insert(), m)
          return result.inserted_primary_key[0]
       except:
          return None
 
+   ## Insert new hashtags to messages
+   def add_mention(self, id, mention):
+      try:
+         conn = self.connect()
+         result = conn.execute(self.mentions.insert(), kon_id=id, username=mention)
+         return result.inserted_primary_key
+      except:
+         return None
+
    # Gets all messages based on query
-   def get_messages(self, args, username):
+   def get_konects(self, args, username):
      try:
       conn = self.connect()
-      query = select([self.messages])
-      for field in ['from', 'to']:
-         if field in args:
-            query = query.where(column(field) == args[field])
+      result = {}
       ## Add 'include'
-      if args['include'] == 'sent':
-         query = query.where(column('from') == username)
-      elif args['include'] == 'received':
-         query = query.where(column('to') == username)
-      else:
-         query = query.where(
-            or_( column('from') == username, column('to') == username )
-         )
-      ## Add 'show'
-      if args['show'] == 'read':
-         query = query.where(column('read') == True)
-      elif args['show'] == 'unread':
-         query = query.where(column('read') == False)
-      ## Add 'order' and direction
-      if args['direction'] == 'desc':
-         query = query.order_by(column(args['order']).desc())
-      else:
-         query = query.order_by(column(args['order']))
+      if args['include'] == 'sent' or args['include'] == 'all':
+         query = select([self.konects])
+         for field in ['sender']:
+           if field in args:
+             query = query.where(column(field) == args[field])
+         query = query.where(column('sender') == username)
+         if args['direction'] == 'desc':
+             query = query.order_by(column(args['order']).desc())
+         else:
+             query = query.order_by(column(args['order']))
+         result['sent'] = conn.execute(query).fetchall()
+      if args['include'] == 'mentioned' or args['include'] == 'all':
+         query = select([self.konects.c.id, self.konects.c.sender, self.konects.c.body, self.konects.c.reply_to, 
+            self.konects.c.created, self.mentions.c.read]).select_from(self.konects.join(self.mentions)).where(self.mentions.c.username == username)
+         if args['show'] == 'read':
+            query = query.where(self.mentions.c.read == True)
+         elif args['show'] == 'unread':
+            query = query.where(self.mentions.c.read == False)
+         # if args['direction'] == 'desc':
+         #    query = query.order_by(column(args['order']).desc())
+         # else:
+         #    query = query.order_by(column(args['order']))
+         result['mentioned'] = conn.execute(query).fetchall()
       ## Perform query
       ##raise ValueError(None)
-      return conn.execute(query).fetchall()
+      return result 
      except:
       return None
 
    # Fetches a single message based on id
-   def fetch_message(self, id):
+   def fetch_konect(self, id):
     try: 
       conn = self.connect()
-      query = select([self.messages]).where(column('id') == id)
+      query = select([self.konects]).where(or_(column('id') == id, column('reply_to') == id))
       results = conn.execute(query).fetchall()
-      return results[0] if len(results) > 0 else None
+      return results if len(results) > 0 else None
     except:
       return False
 
@@ -122,7 +133,7 @@ class Db:
    def add_tag(self, id, tag):
       try:
          conn = self.connect()
-         result = conn.execute(self.tags.insert(), msg_id=id, tag=tag)
+         result = conn.execute(self.tags.insert(), kon_id=id, tag=tag)
          return result.inserted_primary_key
       except:
          return None
