@@ -39,12 +39,14 @@ def search():
    print(users)
    print(tags)
    print(args)
-   results = {'users': {}, 'tags': {}}
+   results = []
    if len(tags) > 0:
-    for tag in tags:
-      results['tags'][tag] = db.find_konects_with_tag(tag)
+      results = [
+         (db.find_konects_with_tag(tag))[0]
+         for tag in tags
+      ]
    print(results)
-   return flask.render_template('index.html', has_result=True, result={'route': 'search_box', 'search': results})
+   return flask.render_template('index.html', has_result=True, result={'route': 'search_box', 'search': results, 'query': query})
 
 # route for handling the login modal
 @app.route('/login', methods = ['POST'])

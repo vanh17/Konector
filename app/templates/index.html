@@ -50,11 +50,16 @@
 {% if has_result %}
 <!-- Public profiles -->
 {% if result['route'] == 'search_box' %}
-{% if 'users' in result['search'] %}
-<p>Users Users Users</p>
-{% endif %}
-{% if 'tags' in result['search'] %}
-<p>Tags Tags Tags</p>
+<h2>Search results for {{ result['query'] }}</h2>
+{% if result['search']|length > 0 %}
+{% for konect in result['search']%}
+<a href="/konect/{{ konect['id'] }}">
+<p class="from">From: @{{ konect['from'] }} at {{ konect['created'] }}</p>
+<p class="body">{{ konect['body'] }}</p>
+</a>
+{% endfor %}
+{% else %}
+<p class=from>No results found</p>
 {% endif %}
 {% endif %}
 {% if result['route'] == 'user_page' %}
@@ -285,10 +290,15 @@
 
 
 <script>
+    //function replaceAll
+    String.prototype.replaceAll = function(search, replacement) {
+         var target = this;
+         return target.replace(new RegExp(search, 'g'), replacement);
+    };
     //Code for searching
     $('#search_button').click(function() {
         //has to change # to %23, the url will not recognize #
-        window.location.href = "/search?q=" + $("#search_form").val().replace("#", "%23");
+        window.location.href = "/search?q=" + $("#search_form").val().replaceAll("#", "%23");
     })
 
     //Changing login/signup function
