@@ -1,6 +1,8 @@
 # Konector
 This is the website interface for people to interact with each other based on their interests of life
 
+You can search Konects with username preceded by @ '@skiadas' and with hashtag '#hashTags'
+
 Made sure in all the input box, click the corresponding box instead of hit enter. 
 
 to access specific users do

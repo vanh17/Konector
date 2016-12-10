@@ -89,7 +89,7 @@ def user_page(username):
   result = {
     'route': 'user_page',
     'check': db.check_user(username),
-    'user': username,
+    'username': username,
     'create': {
       'url': url_for('user_new_konect', username=username),
       'content': {'body': '' }
@@ -120,12 +120,11 @@ def user_konects(username):
    if error is not None:
       return make_json_response({ 'error': error }, 400)  
    results = db.get_konects(args, username)
-   konects = db.get_konects({}, username)
-   print(konects)
    if results is  None:
-      return make_json_response({ 'error': 'Internal Server Error' }, 500)
+      return make_json_response({ 'error': 'Internal Server Error' }, 500)  
    results = {
       'route': 'user_messages',
+      'username': username,
       'mentioned': [
          { 'url': url_for('konect_get', id=m['id']),
            'from': db.get_user_name(m['sender']),

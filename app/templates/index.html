@@ -80,7 +80,7 @@
         	<?php displayUsers(); ?>
       
       		<?php } ?> -->
-      		<h2> {{ result['user'] }} </h2>
+      		<h2> {{ result['username'] }} </h2>
       		<a href="{{ result['tweet'] }}">Your Konects</a>
         </div>        
         <div id="create_form_div">
@@ -345,11 +345,11 @@
     $("#konectplyButton").click(function() {
       $.ajax({
         type: "POST",
-        url: "/users/dalton17/konects",
+        url: "/users/{{ result['username'] }}/konects",
         data: "body=" + $("#konectply_form").val() + "&reply_to=" + $("#m_id").text(),
         success: function(result) {
           alert("You have successfully konected");
-          window.location.href="/users/skiadas/konects";
+          window.location.href="/users/{{ result['username'] }}/konects";
         },
         error: function(result) {
           console.log(result)
@@ -358,19 +358,19 @@
     })
 
 
-
+    {% if has_result %}
     $("#createButton").click(function() {
       $.ajax({
         type: "POST",
-        url: "/users/vanh17/konects",
+        url: "/users{{ result['username'] }}/konects",
         data: "body=" + $("#create_form").val(),
         success: function(result) {
           alert('Successfully konect!');
-          window.location.href= "/users1/" + {{ result['user'] }} + "/google.com";
+          window.location.href= "/users/{{ result['username'] }}/konects";
         },
       })
     }) 
-
+    {% endif %}
 
     
     
