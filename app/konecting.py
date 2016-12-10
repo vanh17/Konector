@@ -35,16 +35,11 @@ def search():
    query = request.args.get('q')
    users = re.findall('(?<=@)[a-zA-Z]+\w+', query)
    tags = re.findall('(?<=#)\w+', query)
-   args = request.args.to_dict()
+   queryTuple = tuple(users + tags)
+   print(queryTuple)
    print(users)
    print(tags)
-   print(args)
-   results = []
-   if len(tags) > 0:
-      results = [
-         (db.find_konects_with_tag(tag))[0]
-         for tag in tags
-      ]
+   results = db.searching(queryTuple)
    print(results)
    return flask.render_template('index.html', has_result=True, result={'route': 'search_box', 'search': results, 'query': query})
 
@@ -121,12 +116,11 @@ def user_delete(username):
 @app.route('/users/<username>/konects', methods = ['GET'])
 def user_konects(username):
    args = request.args.to_dict()
-   print(args)
    error = konect.validate_konect_query(args, username)
    if error is not None:
       return make_json_response({ 'error': error }, 400)  
    results = db.get_konects(args, username)
-   konects = db.get_konects(args, username)
+   konects = db.get_konects({}, username)
    print(konects)
    if results is  None:
       return make_json_response({ 'error': 'Internal Server Error' }, 500)
@@ -173,9 +167,6 @@ def user_new_konect(username):
    if error is not None:
       return make_json_response({ 'error': error }, 400)
    record_id = db.write_konect(contents)
-   print(record_id)
-   print(mentions)
-   print(tags)
    if record_id is None:
       return make_json_response({ 'error': 'Internal Server Error' }, 500)
    for tag in tags:
@@ -192,7 +183,6 @@ def user_new_konect(username):
 @app.route('/konect/<id>', methods = ['GET'])
 def konect_get(id):
    results = db.fetch_konect(id)
-   print(results[0]['id'] + 100)
    if results is None:
       return make_json_response({ 'error': 'Cannot find specified id' }, 404)
    if results is False:
@@ -208,7 +198,6 @@ def konect_get(id):
      }
      for m in results
    ]
-   print(j_results)
    json_response = make_json_response(j_results, 200)
    return flask.render_template('message.html', has_result=True, result=j_results)
 

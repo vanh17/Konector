@@ -54,7 +54,7 @@
 {% if result['search']|length > 0 %}
 {% for konect in result['search']%}
 <a href="/konect/{{ konect['id'] }}">
-<p class="from">From: @{{ konect['from'] }} at {{ konect['created'] }}</p>
+<p class="from">From: @{{ konect['sender'] }} at {{ konect['created'].strftime('%d, %b %Y') }}</p>
 <p class="body">{{ konect['body'] }}</p>
 </a>
 {% endfor %}
@@ -192,7 +192,7 @@
         				<br>
         			{% endfor %}
         			{% else %}
-        			<p>You have no message(s)</p>
+        			<p>You have no konect(s)</p>
         			{% endif %}
 				</div>
 
@@ -209,7 +209,7 @@
 	        			<br>
 	        		{% endfor %}
 	        		{% else %}
-	        		<p>You have no message(s)</p>
+	        		<p>You have no konect(s)</p>
 	        		{% endif %}
 				</div>
         </div>
@@ -404,7 +404,7 @@
                // 		location.href = baseUrl + 'users'
                // }
                // console.log(result)
-               window.location.href="/users/" + $("#username")
+               window.location.href="/users/" + $("#username").val();
             },
             error: function(result) {
               $('#loginAlert').html(result['responseJSON']['error']);

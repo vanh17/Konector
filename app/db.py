@@ -128,11 +128,12 @@ class Db:
       return None
 
    # Find konects with tag
-   def find_konects_with_tag(self, tag):
+   def searching(self, queryTuple):
       try:
          conn = self.connect()
          query = select([self.konects.c.id, self.konects.c.body, self.konects.c.sender, 
-            self.konects.c.created]).select_from(self.konects.join(self.tags)).where(self.tags.c.tag == tag)
+            self.konects.c.created]).select_from(self.konects.join(self.tags).join(self.mentions)).\
+                       where(or_(self.tags.c.tag.in_(queryTuple), self.mentions.c.username.in_(queryTuple), self.konects.c.sender.in_(queryTuple)))
          return conn.execute(query).fetchall()
       except:
          return None
