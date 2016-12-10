@@ -46,8 +46,17 @@
                   <input type="text" class="form-control" id="search_form" placeholder="Please type in the username or #hashTags...">
               </fieldset>
 </form>
+<button id="search_button" class="btn btn-primary">Search</button>
 {% if has_result %}
 <!-- Public profiles -->
+{% if result['route'] == 'search_box' %}
+{% if 'users' in result['search'] %}
+<p>Users Users Users</p>
+{% endif %}
+{% if 'tags' in result['search'] %}
+<p>Tags Tags Tags</p>
+{% endif %}
+{% endif %}
 {% if result['route'] == 'user_page' %}
 {% if result['check'] %}
 <div class="container mainContainer">
@@ -277,11 +286,9 @@
 
 <script>
     //Code for searching
-    $('#search_form').keypress(function(e) {
-        if (event.which == 13) {
-           event.preventDefault();
-           window.location.href="http://google.com"
-        }
+    $('#search_button').click(function() {
+        //has to change # to %23, the url will not recognize #
+        window.location.href = "/search?q=" + $("#search_form").val().replace("#", "%23");
     })
 
     //Changing login/signup function
@@ -328,7 +335,7 @@
     $("#konectplyButton").click(function() {
       $.ajax({
         type: "POST",
-        url: "/users/skiadas/konects",
+        url: "/users/dalton17/konects",
         data: "body=" + $("#konectply_form").val() + "&reply_to=" + $("#m_id").text(),
         success: function(result) {
           alert("You have successfully konected");

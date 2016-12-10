@@ -127,6 +127,16 @@ class Db:
     except:
       return None
 
+   # Find konects with tag
+   def find_konects_with_tag(self, tag):
+      try:
+         conn = self.connect()
+         query = select([self.konects.c.id, self.konects.c.body, self.konects.c.sender, 
+            self.konects.c.created]).select_from(self.konects.join(self.tags)).where(self.tags.c.tag == tag)
+         return conn.execute(query).fetchall()
+      except:
+         return None
+
    # Inserts a new message/tag pair
    # Should only be called once we have established that the pair does not
    # exist, and that id and tag are valid

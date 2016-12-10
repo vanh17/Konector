@@ -30,6 +30,22 @@ db = Db(app.config)
 def index():
    return flask.render_template('index.html', has_result=False)
 
+@app.route('/search', methods = ['GET'])
+def search():
+   query = request.args.get('q')
+   users = re.findall('(?<=@)[a-zA-Z]+\w+', query)
+   tags = re.findall('(?<=#)\w+', query)
+   args = request.args.to_dict()
+   print(users)
+   print(tags)
+   print(args)
+   results = {'users': {}, 'tags': {}}
+   if len(tags) > 0:
+    for tag in tags:
+      results['tags'][tag] = db.find_konects_with_tag(tag)
+   print(results)
+   return flask.render_template('index.html', has_result=True, result={'route': 'search_box', 'search': results})
+
 # route for handling the login modal
 @app.route('/login', methods = ['POST'])
 def login():
@@ -103,11 +119,13 @@ def user_delete(username):
 @app.route('/users/<username>/konects', methods = ['GET'])
 def user_konects(username):
    args = request.args.to_dict()
+   print(args)
    error = konect.validate_konect_query(args, username)
    if error is not None:
-      return make_json_response({ 'error': error }, 400)   
+      return make_json_response({ 'error': error }, 400)  
    results = db.get_konects(args, username)
-   print(results)
+   konects = db.get_konects(args, username)
+   print(konects)
    if results is  None:
       return make_json_response({ 'error': 'Internal Server Error' }, 500)
    results = {
@@ -183,6 +201,7 @@ def konect_get(id):
         "from": m["sender"],
         "isMain": m['id'] == int(id),
         "reply_to": m["reply_to"],
+        "created": m['created'].strftime('%d, %b %Y'),
         "body": m["body"],
      }
      for m in results
@@ -219,52 +238,52 @@ def message_remove(id):
    return make_json_response({}, 204)
 
 
-## Get whether a given tag is in place for this message
-@app.route('/messages/<id>/tags/<tag>', methods = ['GET'])
-def tag_check(id, tag):
-   if (len(tag) > 20):
-      return make_json_response({ 'error' : 'tag too long' }, 400)
-   hasMessage = db.fetch_message(id)
-   if hasMessage is None:
-      return make_json_response({ 'error' : 'No message found' }, 404)
-   check = db.tag_check(id, tag)
-   if (hasMessage is False) or (check is None):
-      return make_json_response({ 'error' : 'Internal Server Error' }, 500)
-   if check:
-        return make_json_response({}, 204)
-   return make_json_response({ 'error' : 'No tag in specified message' }, 404)
+# ## Get whether a given tag is in place for this message
+# @app.route('/messages/<id>/tags/<tag>', methods = ['GET'])
+# def tag_check(id, tag):
+#    if (len(tag) > 20):
+#       return make_json_response({ 'error' : 'tag too long' }, 400)
+#    hasMessage = db.fetch_message(id)
+#    if hasMessage is None:
+#       return make_json_response({ 'error' : 'No message found' }, 404)
+#    check = db.tag_check(id, tag)
+#    if (hasMessage is False) or (check is None):
+#       return make_json_response({ 'error' : 'Internal Server Error' }, 500)
+#    if check:
+#         return make_json_response({}, 204)
+#    return make_json_response({ 'error' : 'No tag in specified message' }, 404)
 
-## Adds a tag to a message, if it did not exist
-@app.route('/messages/<id>/tags/<tag>', methods = ['PUT'])
-def tag_add(id, tag):
-   if len(tag) > 20:
-      return make_json_response({ 'error': 'tag too long' }, 400)
-   message = db.fetch_message(id)
-   if message is None:
-      return make_json_response({ 'error': 'message not found' }, 404)
-   tags = db.fetch_message_tags(id)
-   if tag in tags:
-      return make_json_response({}, 204)
-   # Need to add the tag
-   if db.add_tag(id, tag) is None:
-      return make_json_response({ 'error': 'server error' }, 500)
-   return make_json_response({}, 201)
+# ## Adds a tag to a message, if it did not exist
+# @app.route('/messages/<id>/tags/<tag>', methods = ['PUT'])
+# def tag_add(id, tag):
+#    if len(tag) > 20:
+#       return make_json_response({ 'error': 'tag too long' }, 400)
+#    message = db.fetch_message(id)
+#    if message is None:
+#       return make_json_response({ 'error': 'message not found' }, 404)
+#    tags = db.fetch_message_tags(id)
+#    if tag in tags:
+#       return make_json_response({}, 204)
+#    # Need to add the tag
+#    if db.add_tag(id, tag) is None:
+#       return make_json_response({ 'error': 'server error' }, 500)
+#    return make_json_response({}, 201)
 
-## Removes a tag from a message
-@app.route('/messages/<id>/tags/<tag>', methods = ['DELETE'])
-def tag_remove(id, tag):
-   if (len(tag) > 20):
-      return make_json_response({ 'error' : 'tag too long' }, 400)
-   message = db.fetch_message(id)
-   if message is None:
-      return make_json_response({ 'error': 'message not found' }, 404)
-   tagExist = db.tag_check(id, tag)
-   if tagExist is False:
-     return make_json_response({ 'error': 'tag cannot be found' }, 404)
-   result = db.delete_tag(id, tag)
-   if (result is None) or (tagExist is None):
-      return make_json_response({ 'error': 'Internal Server Error' }, 500)
-   return make_json_response({}, 204)
+# ## Removes a tag from a message
+# @app.route('/messages/<id>/tags/<tag>', methods = ['DELETE'])
+# def tag_remove(id, tag):
+#    if (len(tag) > 20):
+#       return make_json_response({ 'error' : 'tag too long' }, 400)
+#    message = db.fetch_message(id)
+#    if message is None:
+#       return make_json_response({ 'error': 'message not found' }, 404)
+#    tagExist = db.tag_check(id, tag)
+#    if tagExist is False:
+#      return make_json_response({ 'error': 'tag cannot be found' }, 404)
+#    result = db.delete_tag(id, tag)
+#    if (result is None) or (tagExist is None):
+#       return make_json_response({ 'error': 'Internal Server Error' }, 500)
+#    return make_json_response({}, 204)
 
 
 #####################################

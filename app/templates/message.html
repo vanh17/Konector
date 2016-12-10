@@ -15,12 +15,12 @@
 {% if has_result %}
 {% for konect in result %}
 {% if konect['isMain'] %}
-<p class="from">From: @{{ konect['from'] }}</p>
+<p class="from">From: @{{ konect['from'] }} at {{ konect['created'] }}</p>
 <p class="body">{{ konect['body'] }}</p>
 <p id="m_id">{{ konect['id'] }}</p>
 <br>
 {% else %}
-<p class="from">Reply From: @{{ konect['from'] }}</p>
+<p class="from">From: @{{ konect['from'] }} at {{ konect['created'] }}</p>
 <p class="body">{{ konect['body'] }}</p>
 <br>
 {% endif %}
